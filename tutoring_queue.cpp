@@ -123,28 +123,24 @@ bool TutoringQueue::dequeue(string& servedStudentId)
  * E1 — First arrival
  * Why must the first call to enqueue assign newNode to both front and rear?
  * Answer:
- * When the queue is empty, front and rear are both nullptr. The first student is
- * the first one to be served and also the last one in line, so the new node is both
- * the front and the rear. If only rear is set, front stays nullptr and the queue
- * still looks empty. If only front is set, rear stays nullptr, so the next enqueue
- * thinks the queue is empty and the new node does not get linked behind the first one.
+ * When the queue is empty there is no front or rear yet, so the first node is both
+ * the first and the last one in line. Both pointers have to point to it, otherwise
+ * the queue would not work correctly for the next enqueue.
  *
  * E2 — Last departure
  * After dequeue removes the only remaining node, what must happen to rear and why?
  * Answer:
- * rear must become nullptr. When the last node is removed, front becomes nullptr
- * but rear still points to the node that was deleted. That would be a dangling
- * pointer. Setting rear to nullptr makes the empty queue consistent, so the next
- * enqueue treats it like a first arrival instead of using the deleted node.
+ * rear has to become nullptr. If the last node is removed and rear stays the same,
+ * it would point to a node that was already deleted. Setting it to nullptr leaves
+ * the queue clean and empty, ready for the next arrival.
  *
  * E3 — FIFO evidence
  * List the expected service order for TU-301, TU-318, and TU-327. Explain why this
  * differs from the return order of the function-call stack in Part D.
  * Answer:
- * The service order is TU-301, TU-318, TU-327, the same order they arrived. This
- * is FIFO: the queue removes from front, where the oldest student is. The
- * function-call stack returned formatSchedule, loadSchedule, main, which is the
- * reverse of how they were pushed. A stack removes from top, where the newest
- * item is, so the last one in comes out first.
+ * The order is TU-301, TU-318 and TU-327, the same order they arrived. In the stack
+ * the last one in was the first one out, but in the queue the first one in is the
+ * first one out, because a queue serves from the front and a stack removes from the
+ * top.
  *
  */

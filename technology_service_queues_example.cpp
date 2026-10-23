@@ -203,24 +203,21 @@ int main()
  * near the beginning even though LT-103 and LT-104 are still available? Explain
  * the roles of frontIndex, rearIndex, and itemCount.
  * Answer:
- * After the two checkouts, frontIndex moved to 2, so the queue starts at LT-103.
- * Positions 0 and 1 are free now because the queue only counts itemCount devices
- * starting from frontIndex. rearIndex was 3 (LT-104), so when LT-105 arrives
- * it becomes (3 + 1) % 4 = 0, and LT-105 goes into the free position 0 without
- * moving LT-103 and LT-104. frontIndex tells which device leaves next, rearIndex
- * tells where the last returned device is, and itemCount tells how many devices are
- * really in the queue. itemCount is needed because frontIndex and rearIndex can look
- * the same when the queue is empty and when it is full.
+ * The queue only counts the devices between the front and the rear, so once LT-101
+ * and LT-102 leave, their positions are free again. When LT-105 comes in, rearIndex
+ * goes past the last position and wraps back to the beginning, so it uses one of the
+ * free spots. frontIndex shows which device leaves next, rearIndex shows where the
+ * newest device is, and itemCount keeps track of how many devices are in the queue
+ * so the program can tell if it is empty or full.
  *
  * B5 — Dynamic queue empty state
  * After SR-231 is handled, why must rear become nullptr as well as front? Explain
  * what would be wrong if rear still pointed to the deleted node before SR-245 arrives.
  * Answer:
- * When SR-231 is removed, front becomes nullptr because there is no next node.
- * If rear stayed the same, it would point to SR-231, a node that was already deleted.
- * Then enqueue("SR-245") would see that rear is not nullptr, so it would think the
- * queue has nodes, and it would do rear->next = newNode on deleted memory. That is
- * undefined behavior, and front would still be nullptr, so SR-245 would never
- * be found. That is why both front and rear must be nullptr when the queue is empty.
+ * When the last request is handled, front becomes nullptr, and rear has to become
+ * nullptr too. If rear kept pointing to the deleted node, it would be pointing to
+ * memory that no longer belongs to the queue. Then when SR-245 arrives, enqueue
+ * would think there is still a last node and try to attach the new one to it, which
+ * breaks the queue.
  *
  */

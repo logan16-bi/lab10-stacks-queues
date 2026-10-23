@@ -123,27 +123,23 @@ bool FunctionCallStack::peek(string& topFunctionName) const
  * When push("formatSchedule") executes, what must newNode->next receive before top
  * changes? Explain why reversing those two assignments would lose the previous top.
  * Answer:
- * newNode->next must receive the old top, which is the loadSchedule node, before
- * top changes. top is the only pointer that knows where loadSchedule is. If I did
- * top = newNode first, the old address would be gone, and then newNode->next = top
- * would make the new node point to itself. loadSchedule and main would be lost in
- * memory and the stack could not return to them.
+ * newNode->next has to get the old top first, so the new node stays connected to the
+ * rest of the stack. If top is changed first, the old top is lost and the rest of
+ * the nodes can no longer be reached.
  *
  * D2 — Returning from a function
  * After main, loadSchedule, and formatSchedule are pushed in that order, list the
  * order in which three successful pop calls must return their names. Explain LIFO.
  * Answer:
- * The three pops return formatSchedule, then loadSchedule, then main. LIFO means
- * last in, first out. formatSchedule was pushed last, so it is at top and leaves
- * first. After each pop, top moves to the next node, so the next most recent
- * function is the one that leaves. main was pushed first, so it leaves last.
+ * They come out as formatSchedule, loadSchedule and main. LIFO means the last one
+ * pushed is the first one to come out, so the most recent function returns first and
+ * main, the first one pushed, returns last.
  *
  * D3 — Destructor order
  * Why must the destructor save a next-node address before deleting the current node?
  * Answer:
- * After delete, the node's memory is released, so reading its next pointer is not
- * safe. The address of the next node has to be saved before the delete (in this
- * code, top moves to top->next first). Without that, the destructor loses the rest
- * of the nodes and cannot release them, and that is a memory leak.
+ * Once a node is deleted its memory is gone, so the destructor can't use it to find
+ * the next one. The next address has to be saved first so it can keep going through
+ * the rest of the nodes without losing them.
  *
  */
